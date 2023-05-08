@@ -1,4 +1,8 @@
 export AMI_ID="ami-0fc3f9b45ccdac997"
+curl -L "https://releases.hashicorp.com/packer/1.8.7/packer_1.8.7_linux_amd64.zip" -o "packer.zip"
+unzip -q "packer.zip" -d .
+sudo mv packer /usr/local/bin/
+
 export AMI_NAME="CIS Amazon Linux 2 Benchmark v2.0.0.19 - Level 2-c41d38c4-3f6a-4434-9a86-06dd331d3f9c"
 export AMI_OWNER_ACCOUNT_ID="679593333241"
 export AWS_REGION=ap-southeast-2
