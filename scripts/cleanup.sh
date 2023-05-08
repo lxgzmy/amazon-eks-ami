@@ -5,7 +5,7 @@ sudo yum clean all
 sudo rm -rf /var/cache/yum
 
 # Clean up build artifacts
-sudo rm -rf /tmp/worker
+sudo rm -rf /home/ec2-user/worker
 
 # Clean up files to reduce confusion during debug
 sudo rm -rf \

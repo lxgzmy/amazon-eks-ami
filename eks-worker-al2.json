@@ -118,31 +118,31 @@
       "script": "{{template_dir}}/scripts/install_additional_repos.sh",
       "environment_vars": [
         "ADDITIONAL_YUM_REPOS={{user `additional_yum_repos`}}"
-      ]
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
       "remote_folder": "{{ user `remote_folder`}}",
       "inline": [
-        "mkdir -p /tmp/worker/log-collector-script/"
-      ]
+        "mkdir -p /home/ec2-user/worker/log-collector-script/"
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "file",
       "source": "{{template_dir}}/files/",
-      "destination": "/tmp/worker/"
+      "destination": "/home/ec2-user/worker/"
     },
     {
       "type": "file",
       "source": "{{template_dir}}/log-collector-script/linux/",
-      "destination": "/tmp/worker/log-collector-script/"
+      "destination": "/home/ec2-user/worker/log-collector-script/"
     },
     {
       "type": "shell",
       "inline": [
-        "sudo chmod -R a+x /tmp/worker/bin/",
-        "sudo mv /tmp/worker/bin/* /usr/bin/"
-      ]
+        "sudo chmod -R a+x /home/ec2-user/worker/bin/",
+        "sudo mv /home/ec2-user/worker/bin/* /usr/bin/"
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
@@ -153,7 +153,7 @@
       "environment_vars": [
         "KUBERNETES_VERSION={{user `kubernetes_version`}}",
         "KERNEL_VERSION={{user `kernel_version`}}"
-      ]
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
@@ -175,12 +175,13 @@
         "SONOBUOY_E2E_REGISTRY={{user `sonobuoy_e2e_registry`}}",
         "PAUSE_CONTAINER_VERSION={{user `pause_container_version`}}",
         "CACHE_CONTAINER_IMAGES={{user `cache_container_images`}}"
-      ]
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
       "remote_folder": "{{ user `remote_folder`}}",
-      "script": "{{template_dir}}/scripts/cleanup.sh"
+      "script": "{{template_dir}}/scripts/cleanup.sh", 
+      "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
@@ -188,7 +189,7 @@
       "script": "{{template_dir}}/scripts/cleanup_additional_repos.sh",
       "environment_vars": [
         "ADDITIONAL_YUM_REPOS={{user `additional_yum_repos`}}"
-      ]
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
@@ -196,18 +197,18 @@
       "script": "{{template_dir}}/scripts/validate.sh",
       "environment_vars": [
         "KERNEL_VERSION={{user `kernel_version`}}"
-      ]
+      ], "execute_command": "{{.Vars}} bash '{{.Path}}'"
     },
     {
       "type": "shell",
       "remote_folder": "{{ user `remote_folder`}}",
       "script": "{{template_dir}}/scripts/generate-version-info.sh",
-      "execute_command": "chmod +x {{ .Path }}; {{ .Path }} /tmp/version-info.json"
+      "execute_command": "chmod +x {{ .Path }}; {{ .Path }} /home/ec2-user/version-info.json"
     },
     {
       "type": "file",
       "direction": "download",
-      "source": "/tmp/version-info.json",
+      "source": "/home/ec2-user/version-info.json",
       "destination": "{{ user `ami_name` }}-version-info.json"
     }
   ],

@@ -6,7 +6,7 @@ set -o errexit
 IFS=$'\n\t'
 export AWS_DEFAULT_OUTPUT="json"
 
-TEMPLATE_DIR=${TEMPLATE_DIR:-/tmp/worker}
+TEMPLATE_DIR=${TEMPLATE_DIR:-/home/ec2-user/worker}
 
 ################################################################################
 ### Validate Required Arguments ################################################
@@ -124,22 +124,22 @@ sudo mv $TEMPLATE_DIR/iptables-restore.service /etc/eks/iptables-restore.service
 
 ### isolated regions can't communicate to awscli.amazonaws.com so installing awscli through yum
 ISOLATED_REGIONS=(us-iso-east-1 us-iso-west-1 us-isob-east-1)
-if ! [[ " ${ISOLATED_REGIONS[*]} " =~ " ${BINARY_BUCKET_REGION} " ]]; then
-  # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
-  echo "Installing awscli v2 bundle"
-  AWSCLI_DIR=$(mktemp -d)
-  curl \
-    --silent \
-    --show-error \
-    --retry 10 \
-    --retry-delay 1 \
-    -L "https://awscli.amazonaws.com/awscli-exe-linux-${MACHINE}.zip" -o "${AWSCLI_DIR}/awscliv2.zip"
-  unzip -q "${AWSCLI_DIR}/awscliv2.zip" -d ${AWSCLI_DIR}
-  sudo "${AWSCLI_DIR}/aws/install" --bin-dir /bin/ --update
-else
+# if ! [[ " ${ISOLATED_REGIONS[*]} " =~ " ${BINARY_BUCKET_REGION} " ]]; then
+#   # https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html
+#   echo "Installing awscli v2 bundle"
+#   AWSCLI_DIR=$(mktemp -d)
+#   curl \
+#     --silent \
+#     --show-error \
+#     --retry 10 \
+#     --retry-delay 1 \
+#     -L "https://awscli.amazonaws.com/awscli-exe-linux-${MACHINE}.zip" -o "${AWSCLI_DIR}/awscliv2.zip"
+#   unzip -q "${AWSCLI_DIR}/awscliv2.zip" -d ${AWSCLI_DIR}
+#   sudo "${AWSCLI_DIR}/aws/install" --bin-dir /bin/ --update
+# else
   echo "Installing awscli package"
   sudo yum install -y awscli
-fi
+# fi
 
 ################################################################################
 ### systemd ####################################################################
@@ -272,7 +272,7 @@ for binary in ${BINARIES[*]}; do
     sudo wget $S3_URL_BASE/$binary.sha256
   fi
   sudo sha256sum -c $binary.sha256
-  sudo chmod +x $binary
+  sudo chmod 755 $binary
   sudo mv $binary /usr/bin/
 done
 
@@ -489,13 +489,13 @@ sudo yum install -y amazon-ssm-agent
 ################################################################################
 
 BASE_AMI_ID=$(imds /latest/meta-data/ami-id)
-cat << EOF > /tmp/release
+cat << EOF > /home/ec2-user/release
 BASE_AMI_ID="$BASE_AMI_ID"
 BUILD_TIME="$(date)"
 BUILD_KERNEL="$(uname -r)"
 ARCH="$(uname -m)"
 EOF
-sudo mv /tmp/release /etc/eks/release
+sudo mv /home/ec2-user/release /etc/eks/release
 sudo chown -R root:root /etc/eks
 
 ################################################################################
